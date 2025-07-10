@@ -8,12 +8,12 @@ use App\LotteryResultEnum;
 
 class LotteryService
 {
-    public function generateNumber(): int
+    private function generateNumber(): int
     {
         return rand(1, 1000);
     }
 
-    public function getWinPercent(int $number): float
+    private function getWinPercent(int $number): float
     {
         return match (true) {
             $number > 900 => 0.7,
