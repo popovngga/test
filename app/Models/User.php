@@ -52,7 +52,7 @@ class User extends Authenticatable
     public function regenerateToken(): self
     {
         $this->token = Str::uuid();
-        $this->token_expires_at = CarbonImmutable::now()->addSeconds(self::TOKEN_VALIDITY_DAYS);
+        $this->token_expires_at = CarbonImmutable::now()->addDays(self::TOKEN_VALIDITY_DAYS);
         $this->save();
 
         return $this;
