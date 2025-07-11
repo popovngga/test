@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Observers\TokenObserver;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,10 +17,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable $created_at
  * @property User $user
  */
-#[ObservedBy(TokenObserver::class)]
 class Token extends Model
 {
     use SoftDeletes;
+    use HasUuids;
 
     protected $keyType = 'string';
 
