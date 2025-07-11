@@ -3,23 +3,15 @@ window.handleSubmitButtonOnClick = function(button) {
     button.closest('form').submit();
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    const expiresAt = document.querySelector('meta[name="token-expires-at"]')?.content;
+window.copyLink = function (button, text) {
+    const onCopySuccess = (btn) => {
+        btn.textContent = 'Copied';
+        setTimeout(() => {
+            btn.textContent = 'Copy Link';
+        }, 2000);
+    };
 
-    if (!expiresAt) return;
-
-    const expiresTimestamp = parseInt(expiresAt) * 1000;
-    const now = Date.now();
-    const msLeft = expiresTimestamp - now;
-
-    if (msLeft <= 0) {
-        logoutUser();
-        return;
-    }
-
-    setTimeout(logoutUser, msLeft);
-
-    function logoutUser() {
-        window.location.href = '/logout';
-    }
-});
+    navigator.clipboard
+        .writeText(text)
+        .then(() => onCopySuccess(button));
+}

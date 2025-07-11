@@ -4,65 +4,34 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @property int $id
  * @property string $username
  * @property string $phone
- * @property string $token
- * @property CarbonImmutable|null $token_expires_at
  */
-class User extends Authenticatable
+class User extends Model
 {
-    use HasFactory;
-
-    private const TOKEN_VALIDITY_DAYS = 7;
-
-    protected $casts = [
-        'token_expires_at' => 'immutable_datetime',
-    ];
-
     protected $fillable = [
         'username',
         'phone',
-        'token_expires_at',
-        'token',
     ];
 
-    public function lotteryAttempts(): HasMany
+    public function tokens(): HasMany
     {
-        return $this->hasMany(LotteryAttempt::class);
+        return $this->hasMany(Token::class);
+    }
+
+    public function lotteryAttempts(): HasManyThrough
+    {
+        return $this->hasManyThrough(LotteryAttempt::class, Token::class);
     }
 
     public function lastLotteryAttempts(int $count = 3): HasMany
     {
         return $this->lotteryAttempts()->latest()->take($count);
-    }
-
-    public function hasValidToken(): bool
-    {
-        return !!$this->token_expires_at?->isFuture();
-    }
-
-    public function regenerateToken(): self
-    {
-        $this->token = Str::uuid();
-        $this->token_expires_at = CarbonImmutable::now()->addDays(self::TOKEN_VALIDITY_DAYS);
-        $this->save();
-
-        return $this;
-    }
-
-    public function invalidateToken(): self
-    {
-        $this->token_expires_at = null;
-        $this->save();
-
-        return $this;
     }
 }

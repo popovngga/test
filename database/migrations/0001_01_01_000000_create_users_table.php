@@ -14,8 +14,6 @@ return new class extends Migration
             $table->id();
             $table->string('username')->unique();
             $table->string('phone');
-            $table->uuid('token')->nullable();
-            $table->timestamp('token_expires_at')->nullable();
             $table->timestamps();
         });
     }

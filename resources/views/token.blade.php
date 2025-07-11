@@ -4,29 +4,48 @@
     <div class="w-full max-w-md bg-white rounded-xl shadow-md p-6 space-y-6 mx-auto mt-12">
         <h1 class="text-3xl font-extrabold text-center text-gray-900 mb-4">Home</h1>
 
-        <x-status-message :status="session('status')" :color="session('color')" />
+        <x-status-message :status="session('status')" :color="session('color')">
+            @if(session('newLink'))
+                <button
+                    type="button"
+                    onclick="copyLink(this, '{{ session('newLink') }}')"
+                    class="inline-flex items-center gap-1 px-2 py-1 border border-indigo-400 rounded text-indigo-600 hover:bg-indigo-200 transition-colors text-xs"
+                >
+                    Copy Link
+                </button>
+            @endif
+        </x-status-message>
 
         <button
             @disabled($lotteryAttemptsCount === 0)
             type="button"
             class="w-full bg-gray-600 text-white py-3 rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 ease-in-out font-semibold"
-            onclick="window.location.href='{{ route('link.history', $token) }}'"
+            onclick="window.location.href='{{ route('token.history', $token) }}'"
         >
-            View History
+            View Token History
         </button>
 
-        <form method="POST" action="{{ route('link.renew', $token) }}">
+        <button
+            @disabled($userLotteryAttemptsCount === 0)
+            type="button"
+            class="w-full bg-gray-600 text-white py-3 rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 ease-in-out font-semibold"
+            onclick="window.location.href='{{ route('token.user.history', $token) }}'"
+        >
+            View User History
+        </button>
+
+        <form method="POST" action="{{ route('token.store', $token) }}">
             @csrf
-            @method('PATCH')
+            @method('POST')
             <button
                 type="submit"
                 class="w-full bg-gray-600 text-white py-3 rounded-md hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-300 ease-in-out font-semibold"
             >
-                Renew Link
+                Generate Link
             </button>
         </form>
 
-        <form method="POST" action="{{ route('link.invalidate', $token) }}">
+        <form method="POST" action="{{ route('token.delete', $token) }}">
             @csrf
             @method('DELETE')
             <button
@@ -37,7 +56,7 @@
             </button>
         </form>
 
-        <form method="POST" action="{{ route('link.lucky', $token) }}">
+        <form method="POST" action="{{ route('token.lucky', $token) }}">
             @csrf
             <button
                 type="submit"

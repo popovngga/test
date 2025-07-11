@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
+use App\DTO\CreateUserDto;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class RegisterRequest extends FormRequest
@@ -28,5 +31,10 @@ final class RegisterRequest extends FormRequest
         return [
             'phone.phone' => 'The :attribute number is not valid.',
         ];
+    }
+
+    public function getDto(): CreateUserDto
+    {
+        return new CreateUserDto(...$this->validated());
     }
 }

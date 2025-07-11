@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Guards\SessionGuard;
-use Illuminate\Auth\AuthManager;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Auth;
+use App\Exceptions\InvalidTokenException;
+use App\Repositories\TokenRepository;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,17 +17,19 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        Auth::extend('decorated-session', $this->makeSessionGuardDecoratorCallback());
+        Route::bind('token', $this->getTokenBinder());
     }
 
-    private function makeSessionGuardDecoratorCallback(): callable
+    private function getTokenBinder(): callable
     {
-        return function (Application $app, string $name, array $config) {
-            $authManager = new AuthManager($app);
+        return function (string $token) {
+            $tokenInstance = new TokenRepository()->retrieveActiveOrDelete($token);
 
-            $driver = $authManager->createSessionDriver($name, $config);
+            if (!$tokenInstance) {
+               throw new InvalidTokenException();
+            }
 
-            return new SessionGuard($driver);
+            return $tokenInstance;
         };
     }
 }

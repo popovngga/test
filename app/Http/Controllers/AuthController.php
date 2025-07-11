@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterRequest;
-use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -17,27 +16,14 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function register(RegisterRequest $request): RedirectResponse
+    public function register(RegisterRequest $request, UserRepository $userRepository): RedirectResponse
     {
-        $validatedData = $request->validated();
-        $user = User::query()->firstOrCreate(
-            ['username' => $validatedData['username']],
-            $validatedData
+        $token = $userRepository->createUserAndAssignToken(
+            $request->getDto()
         );
 
-        Auth::login($user);
-
         return redirect()
-            ->route('link', ['user' => $user->token])
+            ->route('token', ['token' => $token])
             ->with('status', 'This page will be available for 7 days.');
-    }
-
-    public function logout(): RedirectResponse
-    {
-        Auth::logout();
-
-        return redirect()->route('login')
-            ->with('status', 'You have been logged out.')
-            ->with('color', 'orange');
     }
 }

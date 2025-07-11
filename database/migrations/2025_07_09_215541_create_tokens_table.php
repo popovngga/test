@@ -10,18 +10,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('lottery_attempts', function (Blueprint $table) {
-            $table->id();
+        Schema::create('tokens', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->unsignedInteger('number');
-            $table->string('result');
-            $table->decimal('amount');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('lottery_attempts');
+        Schema::dropIfExists('tokens');
     }
 };

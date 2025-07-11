@@ -12,7 +12,10 @@
 @endphp
 
 @if ($status)
-    <div class="{{ $classes }} px-4 py-2 rounded text-sm text-center">
-        {{ $status }}
+    <div class="{{ $classes }} px-4 py-2 rounded text-sm flex items-center justify-center gap-1 select-text whitespace-nowrap">
+        <span>{{ $status }}</span>
+        <div>
+            {{ $slot }}
+        </div>
     </div>
 @endif
